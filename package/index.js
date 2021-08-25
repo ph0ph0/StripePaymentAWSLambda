@@ -17,8 +17,8 @@ exports.handler = async (event, context) => {
     "X-Requested-With": "*",
   };
 
-  //   Dollars
-  const partialOptimiserPrice = 4.99;
+  //   Must be in cents
+  const partialOptimiserPrice = 499;
 
   let response = {
     statusCode: 200,
@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
       currency: "usd",
       source: token.id,
       description: `Payment for partial optimiser vending machine`,
-      metadta: {
+      metadata: {
         vendingMachine: "PO",
       },
     });
