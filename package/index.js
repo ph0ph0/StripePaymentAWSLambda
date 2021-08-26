@@ -23,6 +23,7 @@ exports.handler = async (event, context) => {
   let response = {
     statusCode: 200,
     headers: headers,
+    body: "",
   };
 
   try {
@@ -36,10 +37,11 @@ exports.handler = async (event, context) => {
       },
     });
     console.log(`Successfully charged credit card`);
-    response["body"] = "Payment Success";
+    response["body"] = process.env.privateToken;
+    console.log(`Sending success response: ${JSON.stringify(response)}`);
   } catch (error) {
     console.log(`Error charging credit card: ${error}`);
-    response["body"] = "Payment failure";
+    response["body"] = `${error}`;
     response["statusCode"] = 500;
   }
 
