@@ -3,10 +3,6 @@ const stripe = require("stripe")(process.env.stripeKey);
 exports.handler = async (event, context) => {
   console.log(`Event: ${JSON.stringify(event)}`);
 
-  const token = event.token.token;
-
-  console.log(`Token: ${JSON.stringify(token)}`);
-
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Headers":
@@ -30,9 +26,16 @@ exports.handler = async (event, context) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: partialOptimiserPrice,
       currency: "usd",
+      description: `Payment for partial optimiser vending machine`,
+      metadata: {
+        vendingMachine: "PO",
+      },
     });
-    console.log(`Successfully created payment intent`);
-    response["body"] = process.env.privateToken;
+    console.log(`Successfully created payment intent: ${paymentIntent}`);
+    response["body"] = {
+      token: process.env.privateToken,
+      paymentIntent: paymentIntent,
+    };
     console.log(`Sending success response: ${JSON.stringify(response)}`);
   } catch (error) {
     console.log(`Error creating payment intent: ${error}`);
