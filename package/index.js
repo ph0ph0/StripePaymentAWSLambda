@@ -27,20 +27,15 @@ exports.handler = async (event, context) => {
   };
 
   try {
-    await stripe.charges.create({
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: partialOptimiserPrice,
       currency: "usd",
-      source: token.id,
-      description: `Payment for partial optimiser vending machine`,
-      metadata: {
-        vendingMachine: "PO",
-      },
     });
-    console.log(`Successfully charged credit card`);
+    console.log(`Successfully created payment intent`);
     response["body"] = process.env.privateToken;
     console.log(`Sending success response: ${JSON.stringify(response)}`);
   } catch (error) {
-    console.log(`Error charging credit card: ${error}`);
+    console.log(`Error creating payment intent: ${error}`);
     response["body"] = `${error}`;
     response["statusCode"] = 500;
   }
