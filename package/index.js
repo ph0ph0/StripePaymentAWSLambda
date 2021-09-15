@@ -1,4 +1,5 @@
 const stripe = require("stripe")(process.env.stripeKey);
+const { publicEncrypt } = require("crypto");
 
 exports.handler = async (event, context) => {
   console.log(`Event: ${JSON.stringify(event)}`);
@@ -21,6 +22,16 @@ exports.handler = async (event, context) => {
     headers: headers,
     body: "",
   };
+  console.log(`Creating Private Token`);
+  let token = publicEncrypt(
+    {
+      key: process.env.publicKey,
+      oaepHash: "sha256",
+    },
+    Buffer.from(process.env.privateToken)
+  );
+
+  console.log(`Private token done`);
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -33,7 +44,7 @@ exports.handler = async (event, context) => {
     });
     console.log(`Successfully created payment intent: ${paymentIntent}`);
     response["body"] = {
-      token: process.env.privateToken,
+      token: token,
       paymentIntent: paymentIntent,
     };
     console.log(`Sending success response: ${JSON.stringify(response)}`);
