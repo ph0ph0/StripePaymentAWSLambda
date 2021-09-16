@@ -23,9 +23,18 @@ exports.handler = async (event, context) => {
     body: "",
   };
   console.log(`Creating Private Token`);
+  // This takes a private token stored in .env file, and uses a public key (also in .env) to encrypt it. This encrypted token is then sent to the client.
+  // We must save the public key as base64 encoded as an environment variable in the AWS Lambda because lambda does not preserve the line breaks
+  // and formatting of the key. Thus, if we base64 encode it, then decode it in the lambda, the formatting is saved and it works.
+  console.log(`Public Key base64: ${process.env.publicKey}`);
+  const decodedPublicKey = Buffer.from(
+    process.env.publicKey,
+    "base64"
+  ).toString("utf-8");
+  // console.log(`Public Key decoded: ${decodedPublicKey}`);
   let token = publicEncrypt(
     {
-      key: process.env.publicKey,
+      key: decodedPublicKey,
       oaepHash: "sha256",
     },
     Buffer.from(process.env.privateToken)
